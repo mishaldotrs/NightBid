@@ -7,7 +7,7 @@
     "sync-zk": "node scripts/sync-zk.mjs",
     "dev": "npm run sync-zk && vite",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --reporter=verbose",
     "build": "npm run sync-zk && vite build",
     "preview": "vite preview"
   },

@@ -11,7 +11,7 @@
     "compact": "compact compile src/nightbid.compact src/managed/nightbid",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run --reporter=verbose"
   },
   "dependencies": {
     "@midnight-ntwrk/compact-runtime": "0.16.0"
