@@ -34,6 +34,8 @@ export function App() {
 
       <TxBanner tx={nb.tx} onDismiss={nb.dismissTx} />
 
+      {!nb.session && nb.wallets.length === 0 && <WalletHelp injected={nb.injected} />}
+
       {!nb.session && <Landing />}
 
       {nb.session && !nb.market && (
@@ -107,6 +109,35 @@ function WalletBadge({ nb }: { nb: ReturnType<typeof useNightBid> }) {
         </button>
       ))}
     </div>
+  );
+}
+
+function WalletHelp({ injected }: { injected: string[] }) {
+  return (
+    <section className="card wallet-help">
+      <h3>{injected.length > 0 ? 'Midnight wallet found, but not compatible' : 'No Midnight wallet detected'}</h3>
+      {injected.length > 0 ? (
+        <>
+          <p className="muted">
+            NightBid needs a wallet that supports the Midnight dApp connector API v4 (a <code>connect()</code> method).
+            Update Lace to the latest version, then reload this page. Detected:
+          </p>
+          <ul>
+            {injected.map((w) => (
+              <li key={w}>
+                <code>{w}</code>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <ol className="muted">
+          <li>Install the Lace extension and create a wallet.</li>
+          <li>In Lace settings, enable <strong>Midnight</strong> and select the <strong>Preprod</strong> network.</li>
+          <li>Reload this page. It detects the wallet automatically.</li>
+        </ol>
+      )}
+    </section>
   );
 }
 

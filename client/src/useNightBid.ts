@@ -3,7 +3,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { friendlyError } from './errors';
 import { DEFAULT_CONTRACT_ADDRESS } from './midnight/config';
 import { NightBidMarket, type PublicMarketState } from './midnight/nightbid-api';
-import { connectWallet, detectWallets, type WalletSession } from './midnight/providers';
+import {
+  connectWallet,
+  describeInjectedWallets,
+  detectWallets,
+  type WalletSession,
+} from './midnight/providers';
 
 export type TxStatus =
   | { kind: 'idle' }
@@ -16,20 +21,30 @@ const LAST_MARKET_KEY = 'nightbid:last-market';
 
 export function useNightBid() {
   const [wallets, setWallets] = useState<InitialAPI[]>([]);
+  const [injected, setInjected] = useState<string[]>([]);
   const [session, setSession] = useState<WalletSession>();
   const [market, setMarket] = useState<NightBidMarket>();
   const [marketState, setMarketState] = useState<PublicMarketState>();
   const [tx, setTx] = useState<TxStatus>({ kind: 'idle' });
   const [bidsVersion, setBidsVersion] = useState(0);
 
-  // Wallet extensions inject asynchronously; poll briefly.
+  // Wallet extensions inject asynchronously (and can be enabled while the
+  // page is open), so keep checking until a compatible wallet appears.
   useEffect(() => {
-    let tries = 0;
-    const timer = setInterval(() => {
+    let logged = false;
+    const check = () => {
       const found = detectWallets();
+      const description = describeInjectedWallets();
       setWallets(found);
-      if (found.length > 0 || ++tries > 20) clearInterval(timer);
-    }, 250);
+      setInjected(description);
+      if (!logged && description.length > 0) {
+        console.info('[NightBid] window.midnight:', description);
+        logged = true;
+      }
+      return found.length > 0;
+    };
+    if (check()) return;
+    const timer = setInterval(() => check() && clearInterval(timer), 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -99,6 +114,7 @@ export function useNightBid() {
 
   return {
     wallets,
+    injected,
     session,
     market,
     marketState,

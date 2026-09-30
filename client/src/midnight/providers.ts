@@ -43,6 +43,18 @@ export const detectWallets = (): InitialAPI[] =>
     (w): w is InitialAPI => typeof w?.connect === 'function',
   );
 
+/**
+ * Describes what is injected into `window.midnight`, including wallets that
+ * speak an older connector API (e.g. `enable()` instead of `connect()`), so
+ * users can see why a wallet isn't usable.
+ */
+export const describeInjectedWallets = (): string[] =>
+  Object.entries(window.midnight ?? {}).map(([key, w]) => {
+    const wallet = w as Partial<InitialAPI> & Record<string, unknown>;
+    const methods = Object.keys(wallet).filter((k) => typeof wallet[k] === 'function');
+    return `${key}: ${wallet.name ?? 'unknown'} (apiVersion ${wallet.apiVersion ?? '?'}; methods: ${methods.join(', ') || 'none'})`;
+  });
+
 const STORAGE_PASSWORD_KEY = 'nightbid:storage-password';
 
 /**
