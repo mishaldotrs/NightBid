@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd .. && npm ci",
+  "buildCommand": "cd .. && npm run build --workspace client",
+  "outputDirectory": "dist",
+  "headers": [
+    {
+      "source": "/nightbid/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }]
+    }
+  ]
+}
