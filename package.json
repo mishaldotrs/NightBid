@@ -13,6 +13,8 @@
   },
   "scripts": {
     "compact": "npm run compact --workspace contract",
+    "proof-server": "docker start midnight-proof-server 2>/dev/null || docker run -d --name midnight-proof-server --restart unless-stopped -p 6300:6300 -e PORT=6300 midnightntwrk/proof-server:8.1.0; echo 'Proof server: http://localhost:6300/health'",
+    "dev": "npm run dev --workspace client",
     "test": "npm run test --workspaces",
     "build": "npm run build --workspaces"
   }

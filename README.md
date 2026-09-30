@@ -122,7 +122,9 @@ NightBid follows the Midnight principle of **selective disclosure**: every value
 
 - Node.js 22+
 - Compact compiler: `curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh`, then `compact update 0.31.1`
-- [Lace wallet](https://www.lace.io) with Midnight enabled, set to **Preprod**, funded with tDUST from the Midnight Preprod faucet (linked from [docs.midnight.network](https://docs.midnight.network))
+- Docker, for the local **proof server** that Lace requires to prove transactions
+- [Lace wallet](https://www.lace.io) with a **Midnight** wallet on **Preprod**, fully synced
+- **tNIGHT** from the [Midnight Preprod faucet](https://faucet.preprod.midnight.network/) (use your *unshielded* `mn_addr_preprod1…` address), with **DUST generation** turned on in Lace. DUST pays the fees.
 
 ### Install, compile, test
 
@@ -135,9 +137,12 @@ npm test                 # 9 contract tests + 6 client tests
 ### Run the dApp
 
 ```bash
+npm run proof-server                       # Midnight proof server on :6300 (Docker)
 cp client/.env.example client/.env.local   # optional: set VITE_CONTRACT_ADDRESS
-npm run dev --workspace client             # http://localhost:5173
+npm run dev                                # http://localhost:5173
 ```
+
+If your wallet has no DUST yet, NightBid shows a built-in funding helper with your faucet address and live tNIGHT/DUST balances. Fee-paying actions stay disabled until DUST arrives.
 
 1. Click **Connect Lace**.
 2. Click **Deploy contract** to launch your market, or paste an existing market address and click **Join**.
