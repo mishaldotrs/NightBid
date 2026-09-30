@@ -34,6 +34,8 @@ export function App() {
 
       <TxBanner tx={nb.tx} onDismiss={nb.dismissTx} />
 
+      {nb.funds && nb.funds.dust === 0n && <FundingHelp funds={nb.funds} />}
+
       {!nb.session && nb.wallets.length === 0 && <WalletHelp injected={nb.injected} />}
 
       {!nb.session && <Landing />}
@@ -137,6 +139,46 @@ function WalletHelp({ injected }: { injected: string[] }) {
           <li>Reload this page. It detects the wallet automatically.</li>
         </ol>
       )}
+    </section>
+  );
+}
+
+function FundingHelp({ funds }: { funds: NonNullable<ReturnType<typeof useNightBid>['funds']> }) {
+  const [copied, setCopied] = useState(false);
+  const hasNight = funds.night > 0n;
+  return (
+    <section className="card wallet-help">
+      <h3>{hasNight ? '⏳ Waiting for DUST to pay fees' : '💧 Get free test tokens to start'}</h3>
+      <p className="muted">
+        Midnight fees are paid in <strong>DUST</strong>, which your <strong>tNIGHT</strong> generates over time.
+        This page checks your balance every 15 seconds.
+      </p>
+      <ol className="funding-steps">
+        <li className={hasNight ? 'done' : ''}>
+          Copy your address, paste it into the{' '}
+          <a href="https://faucet.preprod.midnight.network/" target="_blank" rel="noreferrer">
+            Midnight Preprod faucet
+          </a>{' '}
+          and request tNIGHT.
+          <div className="address-row">
+            <code>{funds.unshieldedAddress}</code>
+            <button
+              className="ghost"
+              onClick={() => {
+                void navigator.clipboard.writeText(funds.unshieldedAddress);
+                setCopied(true);
+              }}
+            >
+              {copied ? 'Copied ✓' : 'Copy'}
+            </button>
+          </div>
+        </li>
+        <li>In Lace, open your tNIGHT and turn on <strong>DUST generation</strong>.</li>
+        <li>Wait a few minutes for DUST to build up. This box disappears once you can pay fees.</li>
+      </ol>
+      <p className="hint">
+        tNIGHT balance: {funds.night.toString()} · DUST balance: {funds.dust.toString()}
+      </p>
     </section>
   );
 }
