@@ -14,10 +14,10 @@ Clients post a gig with a public budget. Freelancers submit bids that are **seal
 
 | | |
 |---|---|
-| 🔗 **Live demo** | **[mishaldotrs.github.io/NightBid](https://mishaldotrs.github.io/NightBid/)** |
+| 🔗 **Live demo** | **[night-bid.vercel.app](https://night-bid.vercel.app/)** (mirror: [mishaldotrs.github.io/NightBid](https://mishaldotrs.github.io/NightBid/)) |
 | 📜 **Contract (Preprod)** | _add your deployed contract address here_ |
 | 🎬 **Demo video** | _add your 1-minute video link here_ |
-| 👨‍💻 **Developer** | [@mishaldotrs](https://github.com/mishaldotrs) |
+| 👨‍💻 **Developer** | **Mishal Turkane** ([@mishaldotrs](https://github.com/mishaldotrs)) |
 
 ![NightBid landing page](docs/landing.png)
 
@@ -186,7 +186,7 @@ npm test
 | **Client** | `npm ci` → typecheck → **6 client tests** → production build → upload the bundle artifact |
 | **Deploy** | On `main` only, after both jobs pass → build with base path `/NightBid/` → publish to **GitHub Pages** |
 
-**Continuous deployment:** every green push to `main` ships to [mishaldotrs.github.io/NightBid](https://mishaldotrs.github.io/NightBid/). A [`vercel.json`](vercel.json) is also included if you prefer Vercel (build command `npm run build --workspace client`, output `client/dist`). The compiled ZK keys are committed, so frontend deploys don't need the Compact compiler.
+**Continuous deployment:** every push to `main` deploys to **[night-bid.vercel.app](https://night-bid.vercel.app/)** via Vercel's Git integration, and every green CI run also publishes the mirror at [mishaldotrs.github.io/NightBid](https://mishaldotrs.github.io/NightBid/). To set up your own Vercel project, import the repo with **Root Directory** set to either `./` ([`vercel.json`](vercel.json)) or `client` ([`client/vercel.json`](client/vercel.json)). Both configs install from the workspace root and build the client, and no environment variables are required. The compiled ZK keys are committed, so frontend deploys don't need the Compact compiler.
 
 ## Project structure
 
@@ -211,6 +211,12 @@ nightbid/
 
 See [`docs/PROPOSAL.md`](docs/PROPOSAL.md).
 
+## Author
+
+**Mishal Turkane** · [GitHub @mishaldotrs](https://github.com/mishaldotrs)
+
+Built for the Rise In × Midnight *New Moon to Full* builder program.
+
 ## License
 
-MIT
+MIT © Mishal Turkane

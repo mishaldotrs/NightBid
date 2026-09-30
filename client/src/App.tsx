@@ -89,8 +89,29 @@ export function App() {
       )}
 
       <footer className="footer">
-        <span>Bids sleep in the dark. Winners wake in the light.</span>
-        <span>Built on Midnight · Compact + ZK proofs</span>
+        <div className="footer-brand">
+          <span>🌑 NightBid</span>
+          <span className="muted">Bids sleep in the dark. Winners wake in the light.</span>
+        </div>
+        <div className="footer-credit">
+          <span>
+            Designed &amp; built by <strong>Mishal Turkane</strong>
+          </span>
+          <nav aria-label="Developer links">
+            <a href="https://github.com/mishaldotrs" target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+            <a href="https://github.com/mishaldotrs/NightBid" target="_blank" rel="noreferrer">
+              Source code
+            </a>
+            <a href="https://midnight.network" target="_blank" rel="noreferrer">
+              Built on Midnight
+            </a>
+          </nav>
+        </div>
+        <p className="footer-note">
+          © {new Date().getFullYear()} Mishal Turkane · Running on Midnight Preprod testnet · Compact + zero-knowledge proofs · MIT License
+        </p>
       </footer>
     </div>
   );
