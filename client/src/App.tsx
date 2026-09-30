@@ -5,6 +5,10 @@ import type { SealedBidSecret } from './midnight/bid-vault';
 import type { NightBidMarket, PublicMarketState } from './midnight/nightbid-api';
 import { useNightBid, type TxStatus } from './useNightBid';
 
+/** NIGHT has 6 decimals (Lace shows 5000000000 as 5,000). */
+const formatNight = (raw: bigint) =>
+  (Number(raw) / 1_000_000).toLocaleString(undefined, { maximumFractionDigits: 6 });
+
 const short = (value: string, size = 6) =>
   value.length > size * 2 + 3 ? `${value.slice(0, size)}…${value.slice(-size)}` : value;
 
@@ -151,9 +155,16 @@ function WalletHelp({ injected }: { injected: string[] }) {
 function FundingHelp({ funds }: { funds: NonNullable<ReturnType<typeof useNightBid>['funds']> }) {
   const [copied, setCopied] = useState(false);
   const hasNight = funds.night > 0n;
+  const generating = funds.dustCap > 0n;
   return (
     <section className="card wallet-help">
-      <h3>{hasNight ? '⏳ Waiting for DUST to pay fees' : '💧 Get free test tokens to start'}</h3>
+      <h3>
+        {!hasNight
+          ? '💧 Get free test tokens to start'
+          : generating
+            ? '⚡ DUST is generating — almost ready'
+            : '⏳ Turn on DUST generation to pay fees'}
+      </h3>
       <p className="muted">
         Midnight fees are paid in <strong>DUST</strong>, which your <strong>tNIGHT</strong> generates over time.
         This page checks your balance every 15 seconds.
@@ -178,11 +189,15 @@ function FundingHelp({ funds }: { funds: NonNullable<ReturnType<typeof useNightB
             </button>
           </div>
         </li>
-        <li>In Lace, open your tNIGHT and turn on <strong>DUST generation</strong>.</li>
+        <li className={generating ? 'done' : ''}>
+          In Lace, turn on <strong>DUST generation</strong> for your tNIGHT (designate it to generate DUST).
+          {generating && ' ✓ Detected — your tNIGHT is registered.'}
+        </li>
         <li>Wait a few minutes for DUST to build up. This box disappears once you can pay fees.</li>
       </ol>
       <p className="hint">
-        tNIGHT balance: {funds.night.toString()} · DUST balance: {funds.dust.toString()}
+        tNIGHT: {formatNight(funds.night)} · DUST: {funds.dust.toString()} (generation cap:{' '}
+        {funds.dustCap.toString()} — {generating ? 'on' : 'off'})
       </p>
     </section>
   );
