@@ -50,6 +50,8 @@ describe('friendlyError', () => {
     );
     expect(friendlyError(new Error('failed assert: a lower claim already leads'))).toMatch(/outbid/);
     expect(friendlyError('User Rejected the transaction')).toMatch(/rejected/);
+    expect(friendlyError(new Error('Transaction denied by user'))).toMatch(/rejected/);
+    expect(friendlyError(new Error('Wallet is not synced'))).toMatch(/still syncing/);
   });
 
   it('passes unknown errors through unchanged', () => {

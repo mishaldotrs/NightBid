@@ -41,7 +41,12 @@ export function App() {
       {!nb.session && <Landing />}
 
       {nb.session && !nb.market && (
-        <MarketPicker onDeploy={nb.deployMarket} onJoin={nb.joinMarket} busy={nb.tx.kind === 'pending'} />
+        <MarketPicker
+          onDeploy={nb.deployMarket}
+          onJoin={nb.joinMarket}
+          busy={nb.tx.kind === 'pending'}
+          noFees={nb.noFees}
+        />
       )}
 
       {nb.market && (
@@ -72,7 +77,7 @@ export function App() {
               market={nb.market}
               state={nb.marketState}
               myBids={nb.mySealedBids}
-              busy={nb.tx.kind === 'pending'}
+              busy={nb.tx.kind === 'pending' || nb.noFees}
               run={nb.run}
             />
           )}
@@ -189,7 +194,8 @@ function TxBanner({ tx, onDismiss }: { tx: TxStatus; onDismiss: () => void }) {
     <div className={`banner ${tx.kind}`} role="status">
       {tx.kind === 'pending' && (
         <span>
-          <span className="spinner" /> {tx.label}… generating a zero-knowledge proof, this can take a moment.
+          <span className="spinner" /> {tx.label}… approve it in Lace, then the zero-knowledge proof is generated
+          (this can take up to a minute).
         </span>
       )}
       {tx.kind === 'success' && (
@@ -251,10 +257,12 @@ function MarketPicker({
   onDeploy,
   onJoin,
   busy,
+  noFees,
 }: {
   onDeploy: () => void;
   onJoin: (address: string) => void;
   busy: boolean;
+  noFees: boolean;
 }) {
   const [address, setAddress] = useState('');
   return (
@@ -275,9 +283,10 @@ function MarketPicker({
       <section className="card">
         <h3>Launch a new market</h3>
         <p className="muted">Deploy your own NightBid contract to Midnight and share its address.</p>
-        <button onClick={onDeploy} disabled={busy}>
+        <button onClick={onDeploy} disabled={busy || noFees}>
           Deploy contract
         </button>
+        {noFees && <p className="hint">Needs DUST for fees — see the steps above.</p>}
       </section>
     </main>
   );

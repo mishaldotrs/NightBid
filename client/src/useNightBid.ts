@@ -107,6 +107,27 @@ export function useNightBid() {
     [],
   );
 
+  // Only block when we positively know there's no DUST; if balances can't be
+  // read, let the wallet decide.
+  const noFees = funds !== undefined && funds.dust === 0n;
+
+  /** Runs an action that submits a transaction (and so needs DUST for fees). */
+  const runTx = useCallback(
+    (label: string, action: () => Promise<string | void>) => {
+      if (noFees) {
+        setTx({
+          kind: 'error',
+          label,
+          message:
+            'Your Midnight wallet has no DUST to pay fees yet. Wait for Lace to finish syncing, get tNIGHT from the faucet and enable DUST generation.',
+        });
+        return Promise.resolve();
+      }
+      return run(label, action);
+    },
+    [noFees, run],
+  );
+
   const connect = useCallback(
     (wallet: InitialAPI) =>
       run('Connecting wallet', async () => {
@@ -128,7 +149,7 @@ export function useNightBid() {
   };
 
   const deployMarket = () =>
-    run('Deploying NightBid market', async () => {
+    runTx('Deploying NightBid market', async () => {
       if (!session) return;
       const m = await NightBidMarket.deploy(session.providers, session.shieldedAddress);
       openMarket(m);
@@ -162,6 +183,7 @@ export function useNightBid() {
     deployMarket,
     joinMarket,
     leaveMarket,
-    run,
+    noFees,
+    run: runTx,
   };
 }

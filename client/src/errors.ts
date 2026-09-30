@@ -1,5 +1,6 @@
 const KNOWN_ERRORS: [RegExp, string][] = [
-  [/rejected|PermissionRejected/i, 'You rejected the request in your wallet.'],
+  [/rejected|PermissionRejected|denied|declined/i, 'You rejected the request in your wallet.'],
+  [/not (yet )?synced|still syncing|sync(ing)? in progress/i, 'Lace is still syncing your Midnight wallet. Wait until it shows "Synced", then try again.'],
   [/bid exceeds budget/, 'Your bid is above the gig budget.'],
   [/bid must be positive/, 'Bids must be greater than zero.'],
   [/client cannot bid on own gig/, "You can't bid on your own gig."],
