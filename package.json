@@ -12,7 +12,7 @@
   },
   "scripts": {
     "compact": "npm run compact --workspace contract",
-    "test": "npm run test --workspace contract",
+    "test": "npm run test --workspaces",
     "build": "npm run build --workspaces"
   }
 }

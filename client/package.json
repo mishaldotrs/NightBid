@@ -7,6 +7,7 @@
     "sync-zk": "node scripts/sync-zk.mjs",
     "dev": "npm run sync-zk && vite",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "build": "npm run sync-zk && vite build",
     "preview": "vite preview"
   },
@@ -34,8 +35,10 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "jsdom": "^26.0.0",
     "typescript": "^5.7.0",
     "vite": "^7.0.0",
+    "vitest": "^3.0.0",
     "vite-plugin-wasm": "^3.4.1"
   }
 }

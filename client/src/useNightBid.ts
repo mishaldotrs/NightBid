@@ -1,5 +1,6 @@
 import type { InitialAPI } from '@midnight-ntwrk/dapp-connector-api';
 import { useCallback, useEffect, useState } from 'react';
+import { friendlyError } from './errors';
 import { DEFAULT_CONTRACT_ADDRESS } from './midnight/config';
 import { NightBidMarket, type PublicMarketState } from './midnight/nightbid-api';
 import { connectWallet, detectWallets, type WalletSession } from './midnight/providers';
@@ -12,23 +13,6 @@ export type TxStatus =
 
 const LAST_MARKET_KEY = 'nightbid:last-market';
 
-/** Turns wallet/contract failures into short, human messages. */
-export const friendlyError = (error: unknown): string => {
-  const raw = error instanceof Error ? error.message : String(error);
-  const known: [RegExp, string][] = [
-    [/rejected|Rejected|PermissionRejected/, 'You rejected the request in your wallet.'],
-    [/bid exceeds budget/, 'Your bid is above the gig budget.'],
-    [/bid must be positive/, 'Bids must be greater than zero.'],
-    [/client cannot bid on own gig/, "You can't bid on your own gig."],
-    [/bidding is not open/, 'Bidding is closed for this gig.'],
-    [/only the client/, 'Only the client who posted this gig can do that.'],
-    [/no matching sealed bid/, "Your reveal doesn't match your sealed bid."],
-    [/a lower claim already leads/, 'A lower bid has already been revealed — you were outbid.'],
-    [/no verified claims/, 'No bidder has revealed a winning bid yet.'],
-    [/Insufficient|insufficient|DUST|dust/, 'Not enough tDUST to pay fees. Top up from the faucet.'],
-  ];
-  return known.find(([pattern]) => pattern.test(raw))?.[1] ?? raw;
-};
 
 export function useNightBid() {
   const [wallets, setWallets] = useState<InitialAPI[]>([]);
