@@ -13,6 +13,8 @@ logger.warn = (msg, options) => !isSourcemapNoise(msg) && warn(msg, options);
 logger.warnOnce = (msg, options) => !isSourcemapNoise(msg) && warnOnce(msg, options);
 
 export default defineConfig({
+  // GitHub Pages serves the app from /NightBid/; local dev and Vercel use /.
+  base: process.env.BASE_PATH ?? '/',
   customLogger: logger,
   plugins: [react(), wasm()],
   define: {

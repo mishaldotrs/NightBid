@@ -14,7 +14,7 @@ Clients post a gig with a public budget. Freelancers submit bids that are **seal
 
 | | |
 |---|---|
-| 🔗 **Live demo** | _add your Vercel URL here_ |
+| 🔗 **Live demo** | **[mishaldotrs.github.io/NightBid](https://mishaldotrs.github.io/NightBid/)** |
 | 📜 **Contract (Preprod)** | _add your deployed contract address here_ |
 | 🎬 **Demo video** | _add your 1-minute video link here_ |
 | 👨‍💻 **Developer** | [@mishaldotrs](https://github.com/mishaldotrs) |
@@ -114,7 +114,7 @@ NightBid follows the Midnight principle of **selective disclosure**: every value
 | Wallet | Lace (Midnight) via `@midnight-ntwrk/dapp-connector-api` 4.0.1 |
 | Frontend | React 19 + TypeScript + Vite 7 |
 | Tests | Vitest: contract simulator + client unit tests |
-| CI/CD | GitHub Actions + Vercel |
+| CI/CD | GitHub Actions → GitHub Pages |
 
 ## Getting started
 
@@ -184,8 +184,9 @@ npm test
 |---|---|
 | **Contract** | Install the Compact toolchain (pinned 0.31.1) → `npm ci` → **compile the contract** (ZK circuits and keys) → typecheck → **9 contract tests** |
 | **Client** | `npm ci` → typecheck → **6 client tests** → production build → upload the bundle artifact |
+| **Deploy** | On `main` only, after both jobs pass → build with base path `/NightBid/` → publish to **GitHub Pages** |
 
-**Continuous deployment:** Vercel builds `main` using [`vercel.json`](vercel.json), with the build command `npm run build --workspace client` and output directory `client/dist`. The compiled ZK keys are committed, so the frontend deploy doesn't need the Compact compiler.
+**Continuous deployment:** every green push to `main` ships to [mishaldotrs.github.io/NightBid](https://mishaldotrs.github.io/NightBid/). A [`vercel.json`](vercel.json) is also included if you prefer Vercel (build command `npm run build --workspace client`, output `client/dist`). The compiled ZK keys are committed, so frontend deploys don't need the Compact compiler.
 
 ## Project structure
 
