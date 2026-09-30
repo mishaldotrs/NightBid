@@ -5,7 +5,7 @@
   "type": "module",
   "description": "NightBid Compact contract: sealed-bid gig auctions on Midnight",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./src/index.ts"
   },
   "scripts": {
     "compact": "compact compile src/nightbid.compact src/managed/nightbid",
