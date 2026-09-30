@@ -9,7 +9,7 @@ const KNOWN_ERRORS: [RegExp, string][] = [
   [/no matching sealed bid/, "Your reveal doesn't match your sealed bid."],
   [/a lower claim already leads/, 'A lower bid has already been revealed — you were outbid.'],
   [/no verified claims/, 'No bidder has revealed a winning bid yet.'],
-  [/insufficient|\bdust\b/i, 'Not enough tDUST to pay fees. Top up from the faucet.'],
+  [/insufficient|\bdust\b/i, 'Not enough DUST to pay fees. Get tNIGHT from the faucet and enable DUST generation in Lace.'],
 ];
 
 /** Turns wallet/contract failures into short, human messages. */

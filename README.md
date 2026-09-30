@@ -82,7 +82,7 @@ NightBid follows the Midnight principle of **selective disclosure**: every value
 - **Reveal is voluntary.** Only bidders who choose to claim become public. The lowest bidder has every incentive to claim, but a bidder can decline. A future version could add bid deposits that are forfeited on no-show.
 - **Bid openings live in one browser.** If you clear site data before revealing, you can't claim that bid. A backup/export flow is on the roadmap.
 - **Revealed claims are public.** A non-winning bidder who claims first (before the lowest bidder) discloses their amount. The UI only offers "claim" when your bid beats the current leader.
-- **No escrow yet.** Payment is off-chain for this level. Level 4 adds shielded tDUST escrow on award.
+- **No escrow yet.** Payment is off-chain for this level. Level 4 adds tNIGHT escrow released on award.
 
 ## Architecture
 

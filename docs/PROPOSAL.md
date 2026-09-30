@@ -43,7 +43,7 @@ The problem needs **private inputs with public verifiability**, which is exactly
 | Level | Deliverable |
 |---|---|
 | **L3 (this)** | Compact contract (6 circuits), sealed bids with ZK budget proof, reveal and award flow, Lace integration, observer view, 15 tests, CI/CD |
-| L4 | Shielded tDUST escrow on award, bid deposits (no-show penalty), bid-opening backup/export, docs site, X profile |
+| L4 | tNIGHT escrow released on award, bid deposits (no-show penalty), bid-opening backup/export, docs site, X profile |
 | L5 | 50 Preprod users: onboarding flow, feedback widget, analytics on bid counts |
 | L6 | Mainnet deploy, dispute resolution, private freelancer reputation, 20 real users |
 
