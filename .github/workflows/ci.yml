@@ -44,7 +44,7 @@ jobs:
         run: npm test --workspace contract
 
   client:
-    name: Client — lint, typecheck & build
+    name: Client — typecheck, test & build
     runs-on: ubuntu-latest
     needs: contract
     steps:
@@ -61,5 +61,14 @@ jobs:
       - name: Typecheck client
         run: npm run typecheck --workspace client
 
-      - name: Build client
+      - name: Run client tests
+        run: npm test --workspace client
+
+      - name: Build client (production bundle + ZK artifacts)
         run: npm run build --workspace client
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nightbid-client-dist
+          path: client/dist
+          retention-days: 7
