@@ -1,0 +1,15 @@
+{
+  "name": "nightbid",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NightBid — sealed-bid gig auctions on Midnight. Bids sleep in the dark, winners wake in the light.",
+  "workspaces": [
+    "contract",
+    "client"
+  ],
+  "scripts": {
+    "compact": "npm run compact --workspace contract",
+    "test": "npm run test --workspace contract",
+    "build": "npm run build --workspaces"
+  }
+}
