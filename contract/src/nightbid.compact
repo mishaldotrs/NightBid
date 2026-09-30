@@ -1,0 +1,219 @@
+// NightBid — sealed-bid reverse auctions for gig work on Midnight.
+//
+// Privacy model:
+//   - Gig postings (title, budget, status) are public by design.
+//   - Bids are sealed: only a hash commitment reaches the ledger. The bid
+//     amount, the nonce, and the bidder's identity never appear publicly.
+//   - The circuit proves (in zero knowledge) that a sealed bid is positive
+//     and within the gig's budget — without revealing the amount.
+//   - After bidding closes, bidders may voluntarily claim the win by
+//     revealing their own bid; the contract checks it against the sealed
+//     commitment. Only claimed (revealed) bids ever become public.
+//   - Losing bids that are never claimed remain secret forever.
+
+pragma language_version >= 0.16;
+
+import CompactStandardLibrary;
+
+export enum GigStatus {
+  open,
+  bidding_closed,
+  awarded,
+  cancelled
+}
+
+export struct Gig {
+  id: Uint<64>,
+  client: Bytes<32>,
+  title: Opaque<"string">,
+  budget: Uint<64>,
+  status: GigStatus,
+  bidCount: Uint<64>,
+  hasWinner: Boolean,
+  winningBid: Uint<64>,
+  winner: Bytes<32>
+}
+
+struct BidPayload {
+  gigId: Uint<64>,
+  amount: Uint<64>,
+  nonce: Bytes<32>,
+  bidder: Bytes<32>
+}
+
+// Public ledger state
+export ledger gigs: Map<Uint<64>, Gig>;
+export ledger nextGigId: Uint<64>;
+export ledger sealedBids: Set<Bytes<32>>;
+
+// Each user's wallet-local secret, never disclosed.
+witness localSecretKey(): Bytes<32>;
+
+// Deterministic, un-linkable identity derived from the local secret key.
+export circuit derivePublicKey(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([pad(32, "nightbid:user:v1"), sk]);
+}
+
+circuit bidCommitment(
+  gigId: Uint<64>,
+  amount: Uint<64>,
+  nonce: Bytes<32>,
+  bidder: Bytes<32>
+): Bytes<32> {
+  return persistentHash<BidPayload>(BidPayload {
+    gigId: gigId,
+    amount: amount,
+    nonce: nonce,
+    bidder: bidder
+  });
+}
+
+// Post a gig with a public maximum budget. Bidding opens immediately.
+export circuit createGig(title: Opaque<"string">, budget: Uint<64>): Uint<64> {
+  // A gig posting is public by design: title and budget are disclosed.
+  const pubTitle = disclose(title);
+  const pubBudget = disclose(budget);
+  assert(pubBudget > 0, "budget must be positive");
+  const client = derivePublicKey(localSecretKey());
+  const id = nextGigId;
+  gigs.insert(id, Gig {
+    id: id,
+    client: disclose(client),
+    title: pubTitle,
+    budget: pubBudget,
+    status: GigStatus.open,
+    bidCount: 0,
+    hasWinner: false,
+    winningBid: 0,
+    winner: default<Bytes<32>>
+  });
+  nextGigId = (nextGigId + 1) as Uint<64>;
+  return id;
+}
+
+// Seal a bid. `amount` and `nonce` are private inputs: the ledger only
+// records their hash commitment. The proof guarantees the hidden amount
+// is positive and within budget.
+export circuit placeBid(gigId: Uint<64>, amount: Uint<64>, nonce: Bytes<32>): [] {
+  // Which gig is being bid on is public; the bid itself stays sealed.
+  const id = disclose(gigId);
+  assert(gigs.member(id), "gig not found");
+  const gig = gigs.lookup(id);
+  assert(gig.status == GigStatus.open, "bidding is not open");
+  assert(amount > 0, "bid must be positive");
+  assert(amount <= gig.budget, "bid exceeds budget");
+
+  const bidder = derivePublicKey(localSecretKey());
+  assert(bidder != gig.client, "client cannot bid on own gig");
+
+  const commitment = bidCommitment(gigId, amount, nonce, bidder);
+  assert(!sealedBids.member(disclose(commitment)), "duplicate sealed bid");
+  sealedBids.insert(disclose(commitment));
+
+  gigs.insert(id, Gig {
+    id: gig.id,
+    client: gig.client,
+    title: gig.title,
+    budget: gig.budget,
+    status: gig.status,
+    bidCount: (gig.bidCount + 1) as Uint<64>,
+    hasWinner: gig.hasWinner,
+    winningBid: gig.winningBid,
+    winner: gig.winner
+  });
+}
+
+// Only the gig's client can end the bidding window.
+export circuit closeBidding(gigId: Uint<64>): [] {
+  const id = disclose(gigId);
+  assert(gigs.member(id), "gig not found");
+  const gig = gigs.lookup(id);
+  assert(gig.status == GigStatus.open, "bidding is not open");
+  const caller = derivePublicKey(localSecretKey());
+  assert(disclose(caller) == gig.client, "only the client can close bidding");
+
+  gigs.insert(id, Gig {
+    id: gig.id,
+    client: gig.client,
+    title: gig.title,
+    budget: gig.budget,
+    status: GigStatus.bidding_closed,
+    bidCount: gig.bidCount,
+    hasWinner: gig.hasWinner,
+    winningBid: gig.winningBid,
+    winner: gig.winner
+  });
+}
+
+// After bidding closes, a bidder may claim the win by revealing their own
+// bid. The contract verifies the revealed values against the sealed
+// commitment, and the lowest verified claim takes the lead.
+export circuit claimWin(gigId: Uint<64>, amount: Uint<64>, nonce: Bytes<32>): [] {
+  const id = disclose(gigId);
+  assert(gigs.member(id), "gig not found");
+  const gig = gigs.lookup(id);
+  assert(gig.status == GigStatus.bidding_closed, "claims open after bidding closes");
+
+  const bidder = derivePublicKey(localSecretKey());
+  const commitment = bidCommitment(gigId, amount, nonce, bidder);
+  assert(sealedBids.member(disclose(commitment)), "no matching sealed bid");
+  assert(!gig.hasWinner || amount < gig.winningBid, "a lower claim already leads");
+
+  gigs.insert(id, Gig {
+    id: gig.id,
+    client: gig.client,
+    title: gig.title,
+    budget: gig.budget,
+    status: gig.status,
+    bidCount: gig.bidCount,
+    hasWinner: true,
+    winningBid: disclose(amount),
+    winner: disclose(bidder)
+  });
+}
+
+// The client finalizes the auction, awarding the gig to the lowest
+// verified claimant.
+export circuit awardGig(gigId: Uint<64>): [] {
+  const id = disclose(gigId);
+  assert(gigs.member(id), "gig not found");
+  const gig = gigs.lookup(id);
+  assert(gig.status == GigStatus.bidding_closed, "gig is not in the claim phase");
+  assert(gig.hasWinner, "no verified claims to award");
+  const caller = derivePublicKey(localSecretKey());
+  assert(disclose(caller) == gig.client, "only the client can award");
+
+  gigs.insert(id, Gig {
+    id: gig.id,
+    client: gig.client,
+    title: gig.title,
+    budget: gig.budget,
+    status: GigStatus.awarded,
+    bidCount: gig.bidCount,
+    hasWinner: gig.hasWinner,
+    winningBid: gig.winningBid,
+    winner: gig.winner
+  });
+}
+
+// The client may cancel a gig while bidding is still open.
+export circuit cancelGig(gigId: Uint<64>): [] {
+  const id = disclose(gigId);
+  assert(gigs.member(id), "gig not found");
+  const gig = gigs.lookup(id);
+  assert(gig.status == GigStatus.open, "only open gigs can be cancelled");
+  const caller = derivePublicKey(localSecretKey());
+  assert(disclose(caller) == gig.client, "only the client can cancel");
+
+  gigs.insert(id, Gig {
+    id: gig.id,
+    client: gig.client,
+    title: gig.title,
+    budget: gig.budget,
+    status: GigStatus.cancelled,
+    bidCount: gig.bidCount,
+    hasWinner: gig.hasWinner,
+    winningBid: gig.winningBid,
+    winner: gig.winner
+  });
+}
