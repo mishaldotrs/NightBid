@@ -12,7 +12,7 @@ Freelance marketplaces run open bidding, where every bid is visible. This causes
 2. **Rate leakage.** Competitors and clients learn each freelancer's pricing, and that follows them to future gigs.
 3. **Trust in the platform.** "Sealed" bids on Web2 platforms only mean sealed from other users. The platform can still see, and could leak or manipulate, every bid.
 
-On public blockchains (Ethereum, Stellar, and others) the problem is worse: every bid is permanently public.
+On transparent public blockchains the problem is worse: every bid is permanently public.
 
 ## Solution
 
@@ -23,7 +23,6 @@ On public blockchains (Ethereum, Stellar, and others) the problem is worse: ever
 - When the client closes bidding, bidders **prove** their bid to claim the win. The contract verifies each claim against the sealed commitment, and the lowest verified claim leads.
 - The client awards the gig. **Losing bids are never revealed, to anyone, ever.**
 
-This evolves my Stellar project **GigVault** (freelance milestone escrow), rebuilt privacy-first on Midnight.
 
 ## Why Midnight
 
@@ -46,7 +45,7 @@ The problem needs **private inputs with public verifiability**, which is exactly
 | **L3 (this)** | Compact contract (6 circuits), sealed bids with ZK budget proof, reveal and award flow, Lace integration, observer view, 15 tests, CI/CD |
 | L4 | Shielded tDUST escrow on award, bid deposits (no-show penalty), bid-opening backup/export, docs site, X profile |
 | L5 | 50 Preprod users: onboarding flow, feedback widget, analytics on bid counts |
-| L6 | Mainnet deploy, dispute resolution, reputation (ported from GigVault), 20 real users |
+| L6 | Mainnet deploy, dispute resolution, private freelancer reputation, 20 real users |
 
 ## Success metrics
 

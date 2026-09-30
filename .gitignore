@@ -15,8 +15,6 @@ client/public/nightbid/
 .env.local
 .env.*.local
 
-# Stellar reference project (not part of NightBid)
-_stellar-reference/
 
 # Misc
 .DS_Store
