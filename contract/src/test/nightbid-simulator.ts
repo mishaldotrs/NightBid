@@ -3,6 +3,9 @@ import {
   createCircuitContext,
   createConstructorContext,
   sampleContractAddress,
+  type CircuitContext,
+  type CircuitResults,
+  type ChargedState,
 } from '@midnight-ntwrk/compact-runtime';
 import {
   Contract,
@@ -28,14 +31,14 @@ export class NightBidSimulator {
   private readonly contract = new Contract<NightBidPrivateState>(witnesses);
   private readonly contractAddress = sampleContractAddress();
   private readonly users = new Map<string, NightBidPrivateState>();
-  private state: unknown;
+  private state!: ChargedState;
 
   private constructor() {}
 
   static async deploy(): Promise<NightBidSimulator> {
     const simulator = new NightBidSimulator();
     const deployerState = simulator.privateStateFor('deployer');
-    const { currentContractState } = await simulator.contract.initialState(
+    const { currentContractState } = simulator.contract.initialState(
       createConstructorContext(deployerState, COIN_PUBLIC_KEY),
     );
     simulator.state = currentContractState.data;
@@ -59,35 +62,34 @@ export class NightBidSimulator {
 
   /** Read the current public ledger state — everything an observer sees. */
   getLedger(): Ledger {
-    return ledger(this.state as never);
+    return ledger(this.state);
   }
 
   getGig(gigId: bigint): Gig {
     return this.getLedger().gigs.lookup(gigId);
   }
 
+  /**
+   * Runs a circuit as `user` against the current ledger. Async so callers
+   * treat it like a real (proved + submitted) transaction.
+   */
   private async call<R>(
     user: string,
-    circuitId: string,
-    invoke: (context: never) => Promise<{
-      result: R;
-      context: { callContext: { currentQueryContext: { state: unknown } } };
-    }>,
+    invoke: (context: CircuitContext<NightBidPrivateState>) => CircuitResults<NightBidPrivateState, R>,
   ): Promise<R> {
-    const context = createCircuitContext({
-      circuitId,
-      contractAddress: this.contractAddress,
-      coinPublicKeyOrZswapState: COIN_PUBLIC_KEY,
-      contractState: this.state as never,
-      privateState: this.privateStateFor(user),
-    });
-    const results = await invoke(context as never);
-    this.state = results.context.callContext.currentQueryContext.state;
+    const context = createCircuitContext(
+      this.contractAddress,
+      COIN_PUBLIC_KEY,
+      this.state,
+      this.privateStateFor(user),
+    );
+    const results = invoke(context);
+    this.state = results.context.currentQueryContext.state;
     return results.result;
   }
 
   createGig(user: string, title: string, budget: bigint): Promise<bigint> {
-    return this.call(user, 'createGig', (ctx) =>
+    return this.call(user, (ctx) =>
       this.contract.impureCircuits.createGig(ctx, title, budget),
     );
   }
@@ -98,13 +100,13 @@ export class NightBidSimulator {
     amount: bigint,
     nonce: Uint8Array,
   ): Promise<[]> {
-    return this.call(user, 'placeBid', (ctx) =>
+    return this.call(user, (ctx) =>
       this.contract.impureCircuits.placeBid(ctx, gigId, amount, nonce),
     );
   }
 
   closeBidding(user: string, gigId: bigint): Promise<[]> {
-    return this.call(user, 'closeBidding', (ctx) =>
+    return this.call(user, (ctx) =>
       this.contract.impureCircuits.closeBidding(ctx, gigId),
     );
   }
@@ -115,19 +117,19 @@ export class NightBidSimulator {
     amount: bigint,
     nonce: Uint8Array,
   ): Promise<[]> {
-    return this.call(user, 'claimWin', (ctx) =>
+    return this.call(user, (ctx) =>
       this.contract.impureCircuits.claimWin(ctx, gigId, amount, nonce),
     );
   }
 
   awardGig(user: string, gigId: bigint): Promise<[]> {
-    return this.call(user, 'awardGig', (ctx) =>
+    return this.call(user, (ctx) =>
       this.contract.impureCircuits.awardGig(ctx, gigId),
     );
   }
 
   cancelGig(user: string, gigId: bigint): Promise<[]> {
-    return this.call(user, 'cancelGig', (ctx) =>
+    return this.call(user, (ctx) =>
       this.contract.impureCircuits.cancelGig(ctx, gigId),
     );
   }

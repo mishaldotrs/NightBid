@@ -21,35 +21,35 @@ export type Witnesses<PS> = {
 export type ImpureCircuits<PS> = {
   createGig(context: __compactRuntime.CircuitContext<PS>,
             title_0: string,
-            budget_0: bigint): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+            budget_0: bigint): __compactRuntime.CircuitResults<PS, bigint>;
   placeBid(context: __compactRuntime.CircuitContext<PS>,
            gigId_0: bigint,
            amount_0: bigint,
-           nonce_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  closeBidding(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
+           nonce_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  closeBidding(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
   claimWin(context: __compactRuntime.CircuitContext<PS>,
            gigId_0: bigint,
            amount_0: bigint,
-           nonce_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  awardGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  cancelGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
+           nonce_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  awardGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
+  cancelGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
 }
 
 export type ProvableCircuits<PS> = {
   createGig(context: __compactRuntime.CircuitContext<PS>,
             title_0: string,
-            budget_0: bigint): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+            budget_0: bigint): __compactRuntime.CircuitResults<PS, bigint>;
   placeBid(context: __compactRuntime.CircuitContext<PS>,
            gigId_0: bigint,
            amount_0: bigint,
-           nonce_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  closeBidding(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
+           nonce_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  closeBidding(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
   claimWin(context: __compactRuntime.CircuitContext<PS>,
            gigId_0: bigint,
            amount_0: bigint,
-           nonce_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  awardGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  cancelGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
+           nonce_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  awardGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
+  cancelGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
 }
 
 export type PureCircuits = {
@@ -57,21 +57,21 @@ export type PureCircuits = {
 }
 
 export type Circuits<PS> = {
-  derivePublicKey(context: __compactRuntime.CircuitContext<PS>, sk_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, Uint8Array>>;
+  derivePublicKey(context: __compactRuntime.CircuitContext<PS>, sk_0: Uint8Array): __compactRuntime.CircuitResults<PS, Uint8Array>;
   createGig(context: __compactRuntime.CircuitContext<PS>,
             title_0: string,
-            budget_0: bigint): Promise<__compactRuntime.CircuitResults<PS, bigint>>;
+            budget_0: bigint): __compactRuntime.CircuitResults<PS, bigint>;
   placeBid(context: __compactRuntime.CircuitContext<PS>,
            gigId_0: bigint,
            amount_0: bigint,
-           nonce_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  closeBidding(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
+           nonce_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  closeBidding(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
   claimWin(context: __compactRuntime.CircuitContext<PS>,
            gigId_0: bigint,
            amount_0: bigint,
-           nonce_0: Uint8Array): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  awardGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
-  cancelGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): Promise<__compactRuntime.CircuitResults<PS, []>>;
+           nonce_0: Uint8Array): __compactRuntime.CircuitResults<PS, []>;
+  awardGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
+  cancelGig(context: __compactRuntime.CircuitContext<PS>, gigId_0: bigint): __compactRuntime.CircuitResults<PS, []>;
 }
 
 export type Ledger = {
@@ -91,17 +91,18 @@ export type Ledger = {
   };
 }
 
+export type ContractReferenceLocations = any;
+
+export declare const contractReferenceLocations : ContractReferenceLocations;
+
 export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>> {
   witnesses: W;
   circuits: Circuits<PS>;
   impureCircuits: ImpureCircuits<PS>;
   provableCircuits: ProvableCircuits<PS>;
   constructor(witnesses: W);
-  initialState(context: __compactRuntime.ConstructorContext<PS>): Promise<__compactRuntime.ConstructorResult<PS>>;
+  initialState(context: __compactRuntime.ConstructorContext<PS>): __compactRuntime.ConstructorResult<PS>;
 }
 
 export declare function ledger(state: __compactRuntime.StateValue | __compactRuntime.ChargedState): Ledger;
 export declare const pureCircuits: PureCircuits;
-export declare const expectedVk: Record<string, string>;
-export declare const circuitSignatures: __compactRuntime.CircuitSignatures;
-export declare const declaredInterfaces: __compactRuntime.DeclaredInterfaces;
