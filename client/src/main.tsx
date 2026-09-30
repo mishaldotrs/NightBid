@@ -1,7 +1,6 @@
-import { Buffer } from 'buffer';
-
-// Midnight's address-format library relies on a global Buffer.
-globalThis.Buffer ??= Buffer;
+// Polyfills must run before any Midnight module is evaluated, so everything
+// else is loaded dynamically below.
+import './polyfills';
 
 const { StrictMode } = await import('react');
 const { createRoot } = await import('react-dom/client');

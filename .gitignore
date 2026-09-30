@@ -16,6 +16,13 @@ client/public/nightbid/
 .env.*.local
 
 
+# This project uses npm (package-lock.json) — other lockfiles break the
+# pinned Midnight WASM runtime overrides.
+bun.lock
+bun.lockb
+yarn.lock
+pnpm-lock.yaml
+
 # Misc
 .DS_Store
 *.log

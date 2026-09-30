@@ -2,6 +2,7 @@
   "name": "nightbid",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@11.6.1",
   "description": "NightBid — sealed-bid gig auctions on Midnight. Bids sleep in the dark, winners wake in the light.",
   "workspaces": [
     "contract",
